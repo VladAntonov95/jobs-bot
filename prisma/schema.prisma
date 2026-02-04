@@ -23,4 +23,6 @@ model Job {
   response    String? // Текст ответа
   aiReply     String? // Тут будет лежать текст от ChatGPT
   createdAt   DateTime @default(now())
+  source      String   // linkedin, dou, workua, djinni
+  updatedAt   DateTime @updatedAt
 }
