@@ -22,9 +22,14 @@ export class JobsService {
 
   async createJob(data: CreateJobDto) {
     const job = await this.prisma.job.create({ data });
+    const description = job.description
+      ? `\n\n<b>Описание:</b>\n${job.description.slice(0, 300)}...`
+      : '';
+
     await this.telegramService.sendMessage(
-      `Новая вакансия ${job.title}\nКомпания: ${job.company}`,
+      `<b>Новая вакансия:</b> ${job.title}\n<b>Компания:</b> ${job.company} ${description}\n<b>Link:</b> <a href="${job.link}">${job.link}</a>`,
       job.id,
+      'NEW_JOB',
     );
 
     return job;
@@ -81,6 +86,12 @@ export class JobsService {
       status: JobStatus.AI_DONE,
       aiReply: letter,
     });
+
+    this.telegramService.sendMessage(
+      `<b>AI Reply:</b>\n\n${letter}`,
+      job.id,
+      'AI_REPLY',
+    );
   }
 
   private cleanDescription(text: string): string {
